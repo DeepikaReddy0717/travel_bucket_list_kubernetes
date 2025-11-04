@@ -1,0 +1,133 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: travel-bucket
+---
+# ===========================
+# MySQL Deployment & Service
+# ===========================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tb-mysql-deployment
+  namespace: travel-bucket
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: Deepu@123     # ⚠ change this for production
+            - name: MYSQL_DATABASE
+              value: travel
+          volumeMounts:
+            - name: mysql-storage
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: mysql-storage
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-db
+  namespace: travel-bucket
+spec:
+  selector:
+    app: mysql
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306
+  type: ClusterIP
+---
+# ===========================
+# Backend Deployment & Service
+# ===========================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tt-backend-deployment
+  namespace: travel-bucket
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: deepikareddy0717/kubernetes-backend:latest  # <-- change this
+          ports:
+            - containerPort: 2000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tt-backend-service
+  namespace: travel-bucket
+spec:
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 2000
+      targetPort: 2000
+      nodePort: 30001        # Optional fixed NodePort (range 30000–32767)
+  type: NodePort
+---
+# ===========================
+# Frontend Deployment & Service
+# ===========================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tt-frontend-deployment
+  namespace: travel-bucket
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: deepikareddy0717/kubernetes-frontend:latest  # <-- change this
+          ports:
+            - containerPort: 80
+          env:
+            - name: VITE_API_URL
+              value: "http://localhost:30001"  # Points to backend NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tt-frontend-service
+  namespace: travel-bucket
+spec:
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30002       # Optional fixed NodePort (range 30000–32767)
+  type: NodePort
