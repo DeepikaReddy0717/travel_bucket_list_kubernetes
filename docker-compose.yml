@@ -16,7 +16,7 @@ services:
     image: deepikareddy0717/travel-backend:latest
     container_name: springboot
     ports:
-      - "1002:1000"
+      - "30002:1000"
     depends_on:
       - mysqldb
     restart: on-failure
@@ -27,7 +27,7 @@ services:
     image: deepikareddy0717/travel-frontend:latest
     container_name: react
     ports:
-      - "1003:80"
+      - "30003:80"
     depends_on:
       - backend
     restart: on-failure
