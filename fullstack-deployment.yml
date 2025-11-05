@@ -71,7 +71,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: deepikareddy0717/kubernetes-backend:latest  # <-- change this
+          image: deepikareddy0717/travel-backend:latest  # <-- change this
           ports:
             - containerPort: 1000
 ---
@@ -85,8 +85,8 @@ spec:
     app: backend
   ports:
     - protocol: TCP
-      port: 2000
-      targetPort: 2000
+      port: 1000
+      targetPort: 1000
       nodePort: 30002        # Optional fixed NodePort (range 30000–32767)
   type: NodePort
 ---
@@ -110,7 +110,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: deepikareddy0717/kubernetes-frontend:latest  # <-- change this
+          image: deepikareddy0717/travel-frontend:latest  # <-- change this
           ports:
             - containerPort: 80
           env:
