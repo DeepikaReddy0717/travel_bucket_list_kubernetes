@@ -13,7 +13,7 @@ services:
       - springboot-mysql-net
 
   backend:
-    image: deepikareddy0717/travel-backend:latest
+    image: deepikareddy0717/travel-backend-ingress:latest
     container_name: springboot
     ports:
       - "30002:1000"
@@ -24,7 +24,7 @@ services:
       - springboot-mysql-net
 
   frontend:
-    image: deepikareddy0717/travel-frontend:latest
+    image: deepikareddy0717/travel-frontend-ingress:latest
     container_name: react
     ports:
       - "30003:80"
